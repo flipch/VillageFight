@@ -4,6 +4,7 @@
 
 ### Logs Folder ###
 .logs/
+.vscode/
 
 ### DotnetCore ###
 # .NET Core build folders
