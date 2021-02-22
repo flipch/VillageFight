@@ -7,26 +7,33 @@
 # define global settings here
 
 name: village-fight
-# registry: exampleuser # dockerhub username or container registry hostname
+registry: uswestvillagefight.azurecr.io
 
 extensions:
   - name: dapr
     log-level: debug
-    config: simplestore-dapr-config
-    components-path: ./components
+    config: appconfig
 
 # define multiple services here
 services:
-  - name: sqlserver
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    env:
-      - name: SA_PASSWORD
-        value: "P@ssword"
-      - name: ACCEPT_EULA
-        value: "Y"
-    bindings:
-      - port: 1433
-        connectionString: Data Source=${host},${port};User Id=sa;Password=${env:SA_PASSWORD};MultipleActiveResultSets=True
+  - name: identity-api
+    project: src/Services/Identity/Identity.API/Identity.API.csproj
 
-  - name: identity
-    project: src/Identity/Identity.Server/Identity.Server.csproj
+  - name: builder-api
+    project: src/Services/Builder/Builder.API/Builder.API.csproj
+
+- name: sqlserver
+  image: mcr.microsoft.com/mssql/server:2017-latest
+  env:
+    - name: SA_PASSWORD
+      value: "P@ssw0rd"
+    - name: ACCEPT_EULA
+      value: "Y"
+  bindings:
+    - port: 1433
+      connectionString: Data Source=${host},${port};Initial Catalog=coolstoredb;User Id=sa;Password=${env:SA_PASSWORD};MultipleActiveResultSets=True;
+
+- name: redis
+  image: redis
+  bindings:
+    - port: 6379
